@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { webSocket } from 'rxjs/webSocket';
+import { environment } from '../../environment';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ChatService {
   private connection$ = webSocket({
-    url: 'wss://0bzrz66p8f.execute-api.us-east-1.amazonaws.com/production',
+    url: environment.webSocketUrl,
   });
 
   messages$ = this.connection$.asObservable();
