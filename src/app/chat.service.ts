@@ -1,16 +1,23 @@
-import { Injectable } from '@angular/core';
+import { Inject, Injectable } from '@angular/core';
+import { retry, tap } from 'rxjs/operators';
 import { webSocket } from 'rxjs/webSocket';
-import { environment } from '../../environment';
+import { WSSUrl } from './wss-url';
 
 @Injectable({
   providedIn: 'root',
 })
 export class ChatService {
+  constructor(@Inject(WSSUrl) private readonly url: string) {}
+
   private connection$ = webSocket({
-    url: environment.webSocketUrl,
+    url: this.url
   });
 
-  messages$ = this.connection$.asObservable();
+  messages$ = this.connection$.pipe(
+    retry({
+      delay: 10
+    })
+  );
 
   sendMessage(message: string | null | undefined) {
     const params = {

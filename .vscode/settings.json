@@ -1,0 +1,43 @@
+{
+  "editor.fontFamily": "Fira Code, Consolas, 'Courier New', monospace",
+  "editor.fontSize": 20,
+  "editor.fontLigatures": true,
+  "zenMode.hideLineNumbers": false,
+
+  "vim.hlsearch": true,
+  "vim.insertModeKeyBindings": [
+    {
+      "before": ["j", "j"],
+      "after": ["<Esc>"]
+    }
+  ],
+  "vim.normalModeKeyBindings": [
+    {
+      "before": ["<leader>", "m"],
+      "commands": ["bookmarks.toggle"]
+    },
+    {
+      "before": ["<leader>", "t"],
+      "commands": ["editor.action.showHover"]
+    },
+    {
+      "before": ["<leader>", "b"],
+      "commands": ["bookmarks.listFromAllFiles"]
+    },
+    {
+      "before": ["<leader>", "z"],
+      "commands": ["workbench.action.toggleZenMode"]
+    }
+  ],
+  "vim.normalModeKeyBindingsNonRecursive": [
+    {
+      "before": ["<leader>", "d"],
+      "after": ["d", "d"]
+    }
+  ],
+  "vim.leader": "<space>",
+  "vim.replaceWithRegister": true,
+  "vim.highlightedyank.enable": true,
+
+  "editor.lineNumbers": "relative"
+}
