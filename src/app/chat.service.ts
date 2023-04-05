@@ -10,15 +10,9 @@ export class ChatService {
   constructor(@Inject(WSSUrl) private readonly url: string) {}
 
   private connection$ = webSocket({
-    url: this.url,
-    closeObserver: {
-      next: () => {
-        console.log('[ChatService]: WS connection closed');
-      }
-    }
+    url: this.url
   });
 
-  // messages$ = this.connection$.asObservable();
   messages$ = this.connection$.pipe(
     retry({
       delay: 10

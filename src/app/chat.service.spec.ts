@@ -1,15 +1,22 @@
 import WS from 'jest-websocket-mock';
 import { ChatService } from './chat.service';
-import { take } from 'rxjs/operators';
 import { subscribeSpyTo } from '@hirez_io/observer-spy';
+
+/**
+ * Per the jest-websocket-mock documentation, it is important not to 
+ * use fakeAsync with these tests since it is relying on setTimeouts 
+ * under the hood to wait on certain events
+ */
 
 describe('ChatService', () => {
     let server: WS;
 
     const wsUrl = "ws://localhost:1234"
 
+    const createServer = () => new WS(wsUrl, { jsonProtocol: true });
+
     beforeEach(() => {
-        server = new WS(wsUrl, { jsonProtocol: true });
+        server = createServer();
     });
     
     afterEach(() => {
@@ -38,7 +45,6 @@ describe('ChatService', () => {
         expect(messagesSpy.getLastValue()).toStrictEqual(testMessage);
     });
 
-    // TODO: Make this test pass
     it('should attempt to reconnect if the connection is closed', async () => {
         const service = new ChatService(wsUrl);
 
@@ -46,16 +52,27 @@ describe('ChatService', () => {
 
         await server.connected;
 
-        server.close();
+        server.send('Before Disconnect')
 
-        await server.closed;
+        server = await simulateDisconnect(server); 
 
         await server.connected;
 
-        const newSpy = subscribeSpyTo(service.messages$);
+        server.send('After Disconnect');
 
-        server.send('after failure');
-
-        expect(newSpy.getLastValue()).toStrictEqual('after failure');
+        expect(messagesSpy.getValues()).toStrictEqual(['Before Disconnect', 'After Disconnect']);
     });
+
+    async function simulateDisconnect(server: WS): Promise<WS> {
+        server.error();
+
+        await server.closed;
+
+        /**
+         * Creating a new server is important here because the mocked server closes all connections
+         * then unregisters itself from the global WebSocket object.
+         * This will prevent new connections from being established on the previous mock.
+         * */ 
+        return createServer();
+    }
 });
