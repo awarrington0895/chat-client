@@ -22,7 +22,7 @@
     },
     {
       "before": ["<leader>", "b"],
-      "commands": ["bookmarks.list"]
+      "commands": ["bookmarks.listFromAllFiles"]
     },
     {
       "before": ["<leader>", "z"],
