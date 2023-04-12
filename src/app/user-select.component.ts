@@ -1,22 +1,29 @@
 import { Component} from '@angular/core';
+import { AsyncPipe, NgForOf } from '@angular/common';
 import { MatListModule } from '@angular/material/list';
 
-import users from './users';
+import { User } from './users';
+import { UserService } from './user.service';
+import { Router } from '@angular/router';
 
 @Component({
     standalone: true,
     selector: 'tz-user-select',
-    imports: [MatListModule],
+    imports: [NgForOf, AsyncPipe,MatListModule],
     template: `
         <mat-action-list>
-            <button mat-list-item (click)="handleClick()">{{ user.name }}</button>
+            <button *ngFor="let user of users$ | async" mat-list-item (click)="logIn(user)">{{ user.name }}</button>
         </mat-action-list>
     `
 })
 export class UserSelectComponent {
-    user = users[0];
 
-    handleClick() {
-        console.log('Selected user');
+    users$ = this.userService.users$;
+
+    constructor(private readonly userService: UserService, private readonly router: Router) {}
+
+    logIn(user: User) {
+        this.userService.selectedUser$.next(user);        
+        this.router.navigate(['chat']);
     }
 }

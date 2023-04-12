@@ -1,4 +1,4 @@
-type User = Readonly<{
+export type User = Readonly<{
    name: string;
    token: string;
 }>;
