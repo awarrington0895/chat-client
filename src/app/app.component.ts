@@ -6,9 +6,10 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { tap } from 'rxjs';
 import { ChatService } from './chat.service';
+import { UserSelectComponent } from './user-select.component';
 
 @Component({
-  selector: 'talkiz-root',
+  selector: 'tz-root',
   standalone: true,
   styleUrls: ['./app.component.scss'],
   imports: [
@@ -17,17 +18,19 @@ import { ChatService } from './chat.service';
     MatFormFieldModule,
     MatInputModule,
     ReactiveFormsModule,
+    UserSelectComponent
   ],
   template: `
     <div style="margin: auto; width: 25%; height: 25%;">
-      <p *ngFor="let message of messages">From WS: {{ message }}</p>
+      <!-- <p *ngFor="let message of messages">From WS: {{ message }}</p>
 
       <form [formGroup]="form" (ngSubmit)="sendMessage()">
         <mat-form-field appearance="fill">
           <mat-label>Type your message here</mat-label>
           <input formControlName="message" matInput />
         </mat-form-field>
-      </form>
+      </form> -->
+      <tz-user-select />
     </div>
   `,
 })
@@ -44,9 +47,9 @@ export class AppComponent {
     private readonly chatService: ChatService,
     private readonly fb: FormBuilder
   ) {
-    this.chatService.messages$
-      .pipe(tap((message) => (this.messages = [...this.messages, message])))
-      .subscribe();
+    // this.chatService.messages$
+    //   .pipe(tap((message) => (this.messages = [...this.messages, message])))
+    //   .subscribe();
   }
 
   sendMessage() {
