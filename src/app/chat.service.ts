@@ -1,28 +1,50 @@
-import { Inject, Injectable } from '@angular/core';
-import { retry, switchMap, tap } from 'rxjs/operators';
+import { Inject, Injectable, OnDestroy } from '@angular/core';
+import { filter, map, retry, switchMap, takeUntil, tap } from 'rxjs/operators';
 import { webSocket } from 'rxjs/webSocket';
 import { WSSUrl } from './wss-url';
 import { UserService } from './user.service';
+import { Observable, Subject } from 'rxjs';
 
 @Injectable({
   providedIn: 'root',
 })
-export class ChatService {
-  constructor(@Inject(WSSUrl) private readonly url: string, private readonly userService: UserService) {}
+export class ChatService implements OnDestroy {
+  private destroy$ = new Subject<void>();
 
-  private connection$ = webSocket({
-    url: this.url
-  });
+  constructor(
+    @Inject(WSSUrl) private readonly url: string,
+    private readonly userService: UserService
+  ) {}
 
-  // private connection$ = this.userService.selectedUser$.pipe(
-  //   switchMap(user => webSocket({
-  //     url: `${this.url}?access_token=${user.token}`
-  //   }))
-  // );
+  // private connection$ = webSocket({
+  //   url: this.url
+  // });
 
-  messages$ = this.connection$.pipe(
+  private sendMessageSubject = new Subject<{ action: string, message: string | null | undefined}>();
+
+  myMessages$ = this.sendMessageSubject.pipe(
+    map(payload => payload.message),
+    filter(Boolean),
+    map(message => `Me: ${message}`)
+  );
+
+  private connection$: Observable<string> = this.userService.selectedUser$.pipe(
+    switchMap((user) => {
+      const ws = webSocket({
+        url: `${this.url}?access_token=${user.token}`,
+      });
+
+      this.sendMessageSubject.pipe(takeUntil(this.destroy$)).subscribe(ws);
+
+
+      return ws;
+    }),
+    map(val => val as string)
+  );
+
+  messages$: Observable<string> = this.connection$.pipe(
     retry({
-      delay: 10
+      delay: 1000,
     })
   );
 
@@ -32,6 +54,11 @@ export class ChatService {
       message,
     };
 
-    this.connection$.next(params);
+    this.sendMessageSubject.next(params);
+  }
+
+  ngOnDestroy(): void {
+      this.destroy$.next();
+      this.destroy$.complete();
   }
 }
