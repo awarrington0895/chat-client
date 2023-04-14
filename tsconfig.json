@@ -19,7 +19,11 @@
     "noImplicitOverride": true,
     "noPropertyAccessFromIndexSignature": true,
     "noImplicitReturns": true,
-    "noFallthroughCasesInSwitch": true
+    "noFallthroughCasesInSwitch": true,
+    "paths": {
+      "@tz/chat": ["src/app/chat/index.ts"],
+      "@tz/user": ["src/app/user/index.ts"]
+    }
   },
   "files": [],
   "include": [],

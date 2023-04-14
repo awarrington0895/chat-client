@@ -1,8 +1,10 @@
 {
-  "editor.fontFamily": "Fira Code, Consolas, 'Courier New', monospace",
+  "editor.fontFamily": "Victor Mono SemiBold, Fira Code, Consolas, 'Courier New', monospace",
+  "terminal.integrated.fontFamily": "Fira Code, Consolas, monospace",
   "editor.fontSize": 20,
   "editor.fontLigatures": true,
   "zenMode.hideLineNumbers": false,
+  "editor.letterSpacing": 0.8,
 
   "vim.hlsearch": true,
   "vim.insertModeKeyBindings": [
