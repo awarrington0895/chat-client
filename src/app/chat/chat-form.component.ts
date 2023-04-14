@@ -26,12 +26,14 @@ import { ChatService } from './chat.service';
   `,
 })
 export class ChatFormComponent {
-
   form = this.fb.group({
     message: new FormControl(''),
   });
 
-  constructor(private readonly fb: FormBuilder, private readonly chat: ChatService) {}
+  constructor(
+    private readonly fb: FormBuilder,
+    private readonly chat: ChatService
+  ) {}
 
   sendMessage() {
     this.chat.sendMessage(this.form.value.message);

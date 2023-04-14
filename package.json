@@ -6,7 +6,8 @@
     "start": "nx serve",
     "build": "nx build",
     "test": "nx test",
-    "env:init": "node init.js"
+    "env:init": "node init.js",
+    "prettier": "prettier src/app --write"
   },
   "private": true,
   "dependencies": {

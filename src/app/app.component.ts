@@ -8,11 +8,7 @@ import { map, startWith } from 'rxjs';
   selector: 'tz-root',
   standalone: true,
   styleUrls: ['./app.component.scss'],
-  imports: [
-    NgIf,
-    AsyncPipe,
-    RouterModule
-  ],
+  imports: [NgIf, AsyncPipe, RouterModule],
   template: `
     <div style="margin: auto; width: 25%; height: 25%;">
       <h2 *ngIf="userNotSelected$ | async">Pick a user for sign-in</h2>
@@ -24,7 +20,7 @@ export class AppComponent {
   title = 'talkiz';
 
   userNotSelected$ = this.userService.selectedUser$.pipe(
-    map(user => !user),
+    map((user) => !user),
     startWith(true)
   );
 

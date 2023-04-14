@@ -5,98 +5,101 @@ import { Observable, ReplaySubject, of } from 'rxjs';
 import { User, users, UserService } from '@tz/user';
 
 /**
- * Per the jest-websocket-mock documentation, it is important not to 
- * use fakeAsync with these tests since it is relying on setTimeouts 
+ * Per the jest-websocket-mock documentation, it is important not to
+ * use fakeAsync with these tests since it is relying on setTimeouts
  * under the hood to wait on certain events
  */
 
 describe('ChatService', () => {
-    let server: WS;
+  let server: WS;
 
-    const wsUrl = "ws://localhost:1234"
+  const wsUrl = 'ws://localhost:1234';
 
-    const createServer = () => new WS(wsUrl, { jsonProtocol: true });
+  const createServer = () => new WS(wsUrl, { jsonProtocol: true });
 
-    const createMockUserService = (selectedUser$: Observable<User>) => {
-        return {
-            selectedUser$
-        } as UserService;
-    }
+  const createMockUserService = (selectedUser$: Observable<User>) => {
+    return {
+      selectedUser$,
+    } as UserService;
+  };
 
-    const defaultMockUserService = createMockUserService(of(users[0]))
+  const defaultMockUserService = createMockUserService(of(users[0]));
 
-    beforeEach(() => {
-        server = createServer();
-    });
-    
-    afterEach(() => {
-        WS.clean();
-    })
+  beforeEach(() => {
+    server = createServer();
+  });
 
-    it('should connect to mock websocket server', async () => {
-        const service = new ChatService(wsUrl, defaultMockUserService);
+  afterEach(() => {
+    WS.clean();
+  });
 
-        subscribeSpyTo(service.messages$);
+  it('should connect to mock websocket server', async () => {
+    const service = new ChatService(wsUrl, defaultMockUserService);
 
-        await server.connected;
-    });
+    subscribeSpyTo(service.messages$);
 
-    it('should not connect to server if there is no selected user', () => {
-       const unselectedUser = createMockUserService(new ReplaySubject<User>(1)); 
+    await server.connected;
+  });
 
-       const service = new ChatService(wsUrl, unselectedUser);
+  it('should not connect to server if there is no selected user', () => {
+    const unselectedUser = createMockUserService(new ReplaySubject<User>(1));
 
-       const messageSpy = subscribeSpyTo(service.messages$);
+    const service = new ChatService(wsUrl, unselectedUser);
 
-       server.send('test message');
+    const messageSpy = subscribeSpyTo(service.messages$);
 
-       expect(messageSpy.getValuesLength()).toBe(0);
+    server.send('test message');
 
-       expect(server.server.clients.length).toBe(0);
-    });
+    expect(messageSpy.getValuesLength()).toBe(0);
 
-    it('should be able to receive a message from websocket server', async () => {
-        const service = new ChatService(wsUrl, defaultMockUserService);
+    expect(server.server.clients.length).toBe(0);
+  });
 
-        const testMessage = 'test message';
+  it('should be able to receive a message from websocket server', async () => {
+    const service = new ChatService(wsUrl, defaultMockUserService);
 
-        const messagesSpy = subscribeSpyTo(service.messages$);
+    const testMessage = 'test message';
 
-        await server.connected;
+    const messagesSpy = subscribeSpyTo(service.messages$);
 
-        server.send(testMessage);
+    await server.connected;
 
-        expect(messagesSpy.getLastValue()).toStrictEqual(testMessage);
-    });
+    server.send(testMessage);
 
-    it('should attempt to reconnect if the connection is closed', async () => {
-        const service = new ChatService(wsUrl, defaultMockUserService);
+    expect(messagesSpy.getLastValue()).toStrictEqual(testMessage);
+  });
 
-        const messagesSpy = subscribeSpyTo(service.messages$);
+  it('should attempt to reconnect if the connection is closed', async () => {
+    const service = new ChatService(wsUrl, defaultMockUserService);
 
-        await server.connected;
+    const messagesSpy = subscribeSpyTo(service.messages$);
 
-        server.send('Before Disconnect')
+    await server.connected;
 
-        server = await simulateDisconnect(server); 
+    server.send('Before Disconnect');
 
-        await server.connected;
+    server = await simulateDisconnect(server);
 
-        server.send('After Disconnect');
+    await server.connected;
 
-        expect(messagesSpy.getValues()).toStrictEqual(['Before Disconnect', 'After Disconnect']);
-    });
+    server.send('After Disconnect');
 
-    async function simulateDisconnect(server: WS): Promise<WS> {
-        server.error();
+    expect(messagesSpy.getValues()).toStrictEqual([
+      'Before Disconnect',
+      'After Disconnect',
+    ]);
+  });
 
-        await server.closed;
+  async function simulateDisconnect(server: WS): Promise<WS> {
+    server.error();
 
-        /**
-         * Creating a new server is important here because the mocked server closes all connections
-         * then unregisters itself from the global WebSocket object.
-         * This will prevent new connections from being established on the previous mock.
-         * */ 
-        return createServer();
-    }
+    await server.closed;
+
+    /**
+     * Creating a new server is important here because the mocked server closes all connections
+     * then unregisters itself from the global WebSocket object.
+     * This will prevent new connections from being established on the previous mock.
+     * */
+    return createServer();
+  }
 });

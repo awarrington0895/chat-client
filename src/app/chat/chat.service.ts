@@ -16,12 +16,15 @@ export class ChatService implements OnDestroy {
     private readonly userService: UserService
   ) {}
 
-  private sendMessageSubject = new Subject<{ action: string, message: string | null | undefined}>();
+  private sendMessageSubject = new Subject<{
+    action: string;
+    message: string | null | undefined;
+  }>();
 
   myMessages$ = this.sendMessageSubject.pipe(
-    map(payload => payload.message),
+    map((payload) => payload.message),
     filter(Boolean),
-    map(message => `Me: ${message}`)
+    map((message) => `Me: ${message}`)
   );
 
   private connection$: Observable<string> = this.userService.selectedUser$.pipe(
@@ -32,10 +35,9 @@ export class ChatService implements OnDestroy {
 
       this.sendMessageSubject.pipe(takeUntil(this.destroy$)).subscribe(ws);
 
-
       return ws;
     }),
-    map(val => val as string)
+    map((val) => val as string)
   );
 
   messages$: Observable<string> = this.connection$.pipe(
@@ -54,7 +56,7 @@ export class ChatService implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-      this.destroy$.next();
-      this.destroy$.complete();
+    this.destroy$.next();
+    this.destroy$.complete();
   }
 }
