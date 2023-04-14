@@ -4,7 +4,7 @@ import { MatCardModule } from '@angular/material/card';
 import { AsyncPipe, NgForOf } from "@angular/common";
 import { MatListModule } from "@angular/material/list";
 import { Observable, map, merge, scan } from "rxjs";
-import { UserService } from "./user.service";
+import { UserService } from "@tz/user";
 
 @Component({
     standalone: true,

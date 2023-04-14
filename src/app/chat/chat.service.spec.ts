@@ -2,8 +2,7 @@ import WS from 'jest-websocket-mock';
 import { ChatService } from './chat.service';
 import { subscribeSpyTo } from '@hirez_io/observer-spy';
 import { Observable, ReplaySubject, of } from 'rxjs';
-import users, { User } from './users';
-import { UserService } from './user.service';
+import { User, users, UserService } from '@tz/user';
 
 /**
  * Per the jest-websocket-mock documentation, it is important not to 

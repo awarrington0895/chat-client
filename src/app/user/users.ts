@@ -3,7 +3,7 @@ export type User = Readonly<{
    token: string;
 }>;
 
-const users: User[] =  [
+export const users: User[] =  [
     {
         name: 'John Admin',
         token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkpvaG4gQWRtaW4iLCJpYXQiOjE1MTYyMzkwMjIsInBlcnNvbklkIjoiODEzNDU0ZTctOTk0Ny00OWY4LWI4MWItODI2MDVhZDY3ZmM2IiwiZ3JvdXBzIjpbImNoYXQuYWRtaW4iLCJjaGF0LnVzZXIiXX0.ClRD965x9KzOFalk6MFCSVDj8F8wGpo8eAQ0YGQhbQo'
@@ -25,5 +25,3 @@ const users: User[] =  [
         token: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIxMjM0NTY3ODkwIiwibmFtZSI6IkFsbGVuIEFub255bW91cyIsImlhdCI6MTUxNjIzOTAyMiwicGVyc29uSWQiOiI2MDMzZTEwNC1lMjlmLTQ2NDktYjY4MS04MDBkYzc0ZjhhNTgiLCJncm91cHMiOltdfQ.5bF80f3zsphZ_pSyeafRn_Dc-huPI-kbujSDQjwYGm0'
     }
 ];
-
-export default users;

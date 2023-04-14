@@ -1,8 +1,8 @@
 import { Inject, Injectable, OnDestroy } from '@angular/core';
-import { filter, map, retry, switchMap, takeUntil, tap } from 'rxjs/operators';
+import { filter, map, retry, switchMap, takeUntil } from 'rxjs/operators';
 import { webSocket } from 'rxjs/webSocket';
 import { WSSUrl } from './wss-url';
-import { UserService } from './user.service';
+import { UserService } from '@tz/user';
 import { Observable, Subject } from 'rxjs';
 
 @Injectable({
@@ -15,10 +15,6 @@ export class ChatService implements OnDestroy {
     @Inject(WSSUrl) private readonly url: string,
     private readonly userService: UserService
   ) {}
-
-  // private connection$ = webSocket({
-  //   url: this.url
-  // });
 
   private sendMessageSubject = new Subject<{ action: string, message: string | null | undefined}>();
 

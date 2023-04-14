@@ -1,7 +1,7 @@
 import { AsyncPipe, NgIf } from '@angular/common';
 import { Component } from '@angular/core';
 import { RouterModule } from '@angular/router';
-import { UserService } from './user.service';
+import { UserService } from '@tz/user';
 import { map, startWith } from 'rxjs';
 
 @Component({
