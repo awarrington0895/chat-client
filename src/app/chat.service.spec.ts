@@ -1,6 +1,9 @@
 import WS from 'jest-websocket-mock';
 import { ChatService } from './chat.service';
 import { subscribeSpyTo } from '@hirez_io/observer-spy';
+import { Observable, ReplaySubject, of } from 'rxjs';
+import users, { User } from './users';
+import { UserService } from './user.service';
 
 /**
  * Per the jest-websocket-mock documentation, it is important not to 
@@ -15,6 +18,14 @@ describe('ChatService', () => {
 
     const createServer = () => new WS(wsUrl, { jsonProtocol: true });
 
+    const createMockUserService = (selectedUser$: Observable<User>) => {
+        return {
+            selectedUser$
+        } as UserService;
+    }
+
+    const defaultMockUserService = createMockUserService(of(users[0]))
+
     beforeEach(() => {
         server = createServer();
     });
@@ -24,15 +35,29 @@ describe('ChatService', () => {
     })
 
     it('should connect to mock websocket server', async () => {
-        const service = new ChatService(wsUrl);
+        const service = new ChatService(wsUrl, defaultMockUserService);
 
         subscribeSpyTo(service.messages$);
 
         await server.connected;
     });
 
+    it('should not connect to server if there is no selected user', () => {
+       const unselectedUser = createMockUserService(new ReplaySubject<User>(1)); 
+
+       const service = new ChatService(wsUrl, unselectedUser);
+
+       const messageSpy = subscribeSpyTo(service.messages$);
+
+       server.send('test message');
+
+       expect(messageSpy.getValuesLength()).toBe(0);
+
+       expect(server.server.clients.length).toBe(0);
+    });
+
     it('should be able to receive a message from websocket server', async () => {
-        const service = new ChatService(wsUrl);
+        const service = new ChatService(wsUrl, defaultMockUserService);
 
         const testMessage = 'test message';
 
@@ -46,7 +71,7 @@ describe('ChatService', () => {
     });
 
     it('should attempt to reconnect if the connection is closed', async () => {
-        const service = new ChatService(wsUrl);
+        const service = new ChatService(wsUrl, defaultMockUserService);
 
         const messagesSpy = subscribeSpyTo(service.messages$);
 
